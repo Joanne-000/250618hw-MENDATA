@@ -9,15 +9,13 @@ const { verifyUserId } = require("./auth");
 router.get("/", async (req, res) => {
   try {
     const foods = await User.pantry.find({});
-    // const newFood = user.pantry.push(food);
-    // await user.save();
     console.log("foods", foods);
   } catch (error) {
     res.status(500).json({ error });
   }
 });
 
-// router.post("/foods", async (req, res) => {
+// router.post("/", async (req, res) => {
 //   try {
 //     const { name } = req.body;
 

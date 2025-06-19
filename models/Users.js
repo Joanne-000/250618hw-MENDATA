@@ -13,7 +13,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  pantry: [foodSchema],
+  pantry: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Food",
+    },
+  ],
 });
 
 const User = mongoose.model("User", userSchema);

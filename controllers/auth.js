@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const { v4: uuidv4 } = require("uuid");
 
 const User = require("../models/Users");
+const Food = require("../models/Foods");
 
 const saveUserInPayload = (user) => {
   return { currentUser: user };
@@ -65,8 +66,8 @@ router.post("/sign-in", async (req, res) => {
       // });
       // console.log(req.session);
       // console.log(req.user);
-
-      res.json({ token });
+      const userId = user._id;
+      res.json({ token, payload });
     }
   } catch (error) {
     console.log(error);
@@ -80,25 +81,25 @@ const saveUser = (req, user) => {
 
 const loadUser = (req) => req.currentUser;
 
+const loadUserFromPayload = (payload) => {
+  return payload.currentUser;
+};
+
 const isLogged = (req, res, next) => {
   try {
     const token = req.header("Authorization").split(" ")[1];
     const payload = jwt.verify(token, process.env.JWT_SECRET);
-
     saveUser(req, loadUserFromPayload(payload));
-
     next();
   } catch (error) {
     res.status(401).json({ msg: "No Entry" });
   }
 };
 
-router.get("/:userId", [isLogged], async (req, res) => {
-  const { userId } = req.params;
-  console.log(userId);
+const checkUser = async (req, res, next) => {
   try {
+    const { userId } = req.params;
     const currentUser = loadUser(req);
-    console.log(currentUser);
     if (currentUser._id !== userId) {
       return res.status(403).json({ error: "Unauthorized" });
     }
@@ -108,11 +109,52 @@ router.get("/:userId", [isLogged], async (req, res) => {
     if (user === null) {
       return res.status(404).json({ error: "Not found" });
     }
-
-    res.json({ user });
     next();
   } catch (error) {
     res.status(401).json({ msg: "No Entry" });
+  }
+};
+
+router.get("/:userId", [isLogged, checkUser], async (req, res) => {
+  const { userId } = req.params;
+  const user = await User.findById(userId);
+
+  res.json({ user });
+});
+
+router.get("/:userId/foods", [isLogged, checkUser], async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findById(userId);
+    // const foods = await user.pantry.find({});
+    res.status(200).json({ user });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+});
+
+router.post("/:userId/foods", [isLogged, checkUser], async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findById(userId);
+
+    // const { name } = req.body;
+    const newFood = {
+      name: "chicken rice",
+    };
+
+    if (user.pantry.findOne({ newFood })) {
+      return res.status(409).json({ err: "You have added this food." });
+    }
+
+    const food = await Food.create(newFood);
+
+    user.pantry.push(food);
+
+    await user.save();
+    res.status(201).json({ user });
+  } catch (error) {
+    res.status(500).json({ error });
   }
 });
 

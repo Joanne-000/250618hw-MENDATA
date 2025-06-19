@@ -1,0 +1,26 @@
+meta {
+  name: UserFood
+  type: http
+  seq: 7
+}
+
+get {
+  url: http://localhost:3000/users/:userId
+  body: json
+  auth: bearer
+}
+
+params:path {
+  userId: 68540a87757a2c9dac7f2be9
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXJyZW50VXNlciI6eyJfaWQiOiI2ODU0MGE4Nzc1N2EyYzlkYWM3ZjJiZTkiLCJ1c2VybmFtZSI6IktLSyIsInBhc3N3b3JkIjoiJDJiJDEwJHhWSmdBVmRUeXRtd3NOSWtEbVpJbk90YWhmbEpjbHh3V2wzb2IzUlhJWGg0a1l3NGQyNWM2IiwicGFudHJ5IjpbXSwiX192IjowfSwiaWF0IjoxNzUwMzQzNjMxfQ.qEwm92iYTfo_E0ynOD6_k0OdFPtuZfaNhbO8y3u4Brc
+}
+
+body:json {
+  {
+    "username": "KKK",
+    "password": "oooo"
+  }
+}

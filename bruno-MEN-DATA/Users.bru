@@ -1,0 +1,18 @@
+meta {
+  name: Users
+  type: http
+  seq: 5
+}
+
+get {
+  url: http://localhost:3000/auth/sign-up
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "JJJ",
+    "password": "lsls"
+  }
+}
